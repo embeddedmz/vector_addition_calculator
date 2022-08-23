@@ -1,0 +1,81 @@
+<html>
+<head>
+    <title>Vector Addition Calculator</title>
+</head>
+
+<script>
+var g_vectorsCount;
+
+function generateForm()
+{
+    g_vectorsCount = document.getElementById("vectorsCount").value;
+    if (g_vectorsCount < 2)
+    {
+        g_vectorsCount = 2;
+    }
+    
+    for (var i = 0; i < g_vectorsCount; i++)
+    {
+        var vectorInfoBlock = document.createElement('p');
+        
+        var magField = document.createElement("input");
+        magField.id = "mag" + i.toString();
+        magField.type = "text";
+        magField.value = "";
+        
+        var dirField = document.createElement("input");
+        dirField.id = "dir" + i.toString();
+        dirField.type = "text";
+        dirField.value = "";
+        
+        vectorInfoBlock.innerHTML += 'Magnitude ';
+        vectorInfoBlock.appendChild(magField);
+        vectorInfoBlock.innerHTML += 'Direction (deg) ';
+        vectorInfoBlock.appendChild(dirField);
+        document.getElementById('vectorsForm').appendChild(vectorInfoBlock);
+    }
+    
+    var calcButt = document.createElement("input");
+    calcButt.type = "button";
+    calcButt.value = "Add vectors";
+    calcButt.addEventListener("click", addVectors)
+    document.getElementById('vectorsForm').appendChild(calcButt);
+    
+    document.getElementById('generateFields').style.visibility = "hidden";
+}
+
+function addVectors()
+{
+    // formula https://math.stackexchange.com/questions/1365622/adding-two-polar-vectors
+    // test : https://www.omnicalculator.com/math/vector-addition
+
+    var magSum = 0;
+    var angleSum = 0;
+    for (var i = 0; i < g_vectorsCount; i++)
+    {
+        var mag = document.getElementById('mag' + i.toString()).value;
+        var angle = document.getElementById('dir' + i.toString()).value / 180 * Math.PI;
+        
+        var ss = Math.sqrt(magSum * magSum + mag * mag + 2 * magSum * mag * Math.cos(angle - angleSum));
+        var as = angleSum + Math.atan2(mag * Math.sin(angle - angleSum), magSum + mag * Math.cos(angle - angleSum));
+        
+        magSum = ss;
+        angleSum = as;
+    }
+
+    alert('Magnitude = ' + magSum + ', Direction = ' + (angleSum / Math.PI * 180) + ' degrees.');
+}
+</script>
+
+<body>
+<div id="generateFields">
+How many vectors do you want to add ?
+<input id="vectorsCount" type="text" value="2" />
+<input id="generateForm" type="button" value="OK" onclick="generateForm();" />
+</div>
+
+<div id="vectorsForm">
+</div>
+
+</body>
+</html>
